@@ -1,0 +1,11 @@
+[tool.poetry]
+name = "bairesdev_coding_challenge"
+version = "0.1.0"
+description = ""
+authors = ["M <m@mathsistor.com>"]
+
+[tool.poetry.dependencies]
+python = "*"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
