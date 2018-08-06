@@ -27,7 +27,6 @@ router.register('reviews', views.ReviewViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ratings/', include('star_ratings.urls', namespace='ratings')),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

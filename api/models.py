@@ -1,6 +1,5 @@
 from django.contrib.auth.models import Group, User
 from django.db import models
-from star_ratings.models import Rating
 
 
 class Review(models.Model):
