@@ -63,81 +63,59 @@ def test_get_client_ip_without_x_forwarded_for():
 
 
 class ReviewTests(APITestCase):
+    PASSWORD = 'password'
+
+    def setUp(self):
+        self.url = reverse('review-list')
+        self.reviewer = User.objects.create_user(username='reviewer',
+                                            password=self.PASSWORD,
+                                            email='reviewer@example.com')
+        self.data = {'rating': '3',
+                     'title': 'This is a title',
+                     'summary': 'This is a summary...',
+                     'company': 'Company Inc'}
+
     def test_create_review(self):
         """
         Ensure we can create a new review object.
         """
-        url = reverse('review-list')
-        rating = '3'
-        title = 'This is a title'
-        summary = 'This is a summary...'
-        company = 'Company Inc'
-        data = {'rating': rating,
-                'title': title,
-                'summary': summary,
-                'company': company}
-        PASSWORD = 'password'
-        reviewer = User.objects.create_user(username='testuser',
-                                            password=PASSWORD,
-                                            email='email@example.com')
-        self.client.login(username=reviewer.username, password=PASSWORD)
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Review.objects.count(), 1)
-        self.assertEqual(Review.objects.get().rating, '3')
-        self.assertEqual(Review.objects.get().summary, summary)
-        self.assertEqual(Review.objects.get().company, company)
-        self.assertEqual(Review.objects.get().reviewer, reviewer)
-
+        self.client.login(username=self.reviewer.username, password=self.PASSWORD)
+        response = self.client.post(self.url, self.data, format='json')
+        assert response.status_code == status.HTTP_201_CREATED
+        assert Review.objects.count() == 1
+        assert Review.objects.get().rating == self.data['rating']
+        assert Review.objects.get().title == self.data['title']
+        assert Review.objects.get().summary == self.data['summary']
+        assert Review.objects.get().company == self.data['company']
+        assert Review.objects.get().reviewer == self.reviewer
 
     def test_unauthorized(self):
         """
-        Ensure we can create a new review object.
+        Ensure we can create a new review object only when user is authenticated
         """
-        url = reverse('review-list')
-        rating = '3'
-        title = 'This is a title'
-        summary = 'This is a summary...'
-        company = 'Company Inc'
-        data = {'rating': rating,
-                'title': title,
-                'summary': summary,
-                'company': company}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        response = self.client.post(self.url, self.data, format='json')
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert Review.objects.count() == 0
 
     def test_get(self):
-        PASSWORD = 'password'
-        reviewer = User.objects.create_user(username='testuser',
-                                            password=PASSWORD,
-                                            email='email@example.com')
         another_reviewer = User.objects.create_user(username='another_test_user',
-                                                    password=PASSWORD,
+                                                    password=self.PASSWORD,
                                                     email='another@example.com')
-        url = reverse('review-list')
-        rating = '3'
-        title = 'This is a title'
-        summary = 'This is a summary...'
         ip_address = '127.0.0.1'
         submission_date = timezone.now()
-        company = 'Company Inc'
-        reviewer_review = Review.objects.create(rating=rating,
-                                                title=title,
-                                                summary=summary,
-                                                ip_address=ip_address,
+        reviewer_review = Review.objects.create(ip_address=ip_address,
                                                 submission_date=submission_date,
-                                                company=company,
-                                                reviewer=reviewer)
-        another_review = Review.objects.create(rating=rating,
-                                               title=title,
-                                               summary=summary,
-                                               ip_address=ip_address,
+                                                reviewer=self.reviewer,
+                                                **self.data)
+        another_review = Review.objects.create(ip_address=ip_address,
                                                submission_date=submission_date,
-                                               company=company,
-                                               reviewer=another_reviewer)
+                                               reviewer=another_reviewer,
+                                               **self.data)
 
-        self.client.login(username=reviewer.username, password=PASSWORD)
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Review.objects.count(), 2)
-        self.assertEqual(len(response.data), 1)
+        self.client.login(username=self.reviewer.username, password=self.PASSWORD)
+        response = self.client.get(self.url, format='json')
+
+        assert response.status_code == status.HTTP_200_OK
+        assert Review.objects.count() == 2
+        assert len(response.data) == 1
