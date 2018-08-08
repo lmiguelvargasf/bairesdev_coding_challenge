@@ -11,5 +11,5 @@ class Review(models.Model):
     summary = models.TextField(max_length=10_000)
     ip_address = models.GenericIPAddressField()
     submission_date = models.DateTimeField(auto_now_add=True)
-    company = models.ForeignKey(Group, on_delete=models.CASCADE)
+    company = models.CharField(max_length=100)
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE)
