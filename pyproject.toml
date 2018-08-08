@@ -8,6 +8,7 @@ authors = ["M <m@mathsistor.com>"]
 python = "*"
 django = "^2.1"
 djangorestframework = "^3.8"
+djangorestframework-jwt = "^1.11"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
