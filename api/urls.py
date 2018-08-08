@@ -5,8 +5,6 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify
 from api import views
 
 router = routers.DefaultRouter()
-router.register('users', views.UserViewSet)
-router.register('groups', views.GroupViewSet)
 router.register('reviews', views.ReviewViewSet)
 
 urlpatterns = [
