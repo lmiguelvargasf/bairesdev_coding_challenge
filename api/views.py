@@ -8,5 +8,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows reviews to be viewed or edited.
     """
-    queryset = Review.objects.all().order_by('-submission_date')
     serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        return Review.objects.filter(reviewer=self.request.user)
