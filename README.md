@@ -33,6 +33,20 @@ In order to start the server, run the following command:
 python manage.py runserver
 ```
 
+### Running tests
+[`pytest`][pytest] is used for testing, and [`pytest-cov`][pytest-cov] is the plugin used
+to produce coverage reports.
+
+Execute the following command in order to run the tests:
+```bash
+pytest
+```
+
+Execute the following command in order to run the tests and generate a report:
+````bash
+pytest --cov-report term-missing --cov=api
+````
+
 ## Usage
 ### Obtain a token
 ````bash
@@ -65,3 +79,5 @@ curl -H "Authorization: JWT  <your_token>" \
 
 [poetry]: https://poetry.eustace.io/
 [venv]: https://docs.python.org/3/library/venv.html
+[pytest]: https://docs.pytest.org/en/latest/
+[pytest-cov]: https://github.com/pytest-dev/pytest-cov
