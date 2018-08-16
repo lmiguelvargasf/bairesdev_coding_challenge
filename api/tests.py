@@ -104,18 +104,24 @@ class ReviewTests(APITestCase):
                                                     email='another@example.com')
         ip_address = '127.0.0.1'
         submission_date = timezone.now()
+        data = self.data.copy()
         reviewer_review = Review.objects.create(ip_address=ip_address,
                                                 submission_date=submission_date,
                                                 reviewer=self.reviewer,
-                                                **self.data)
+                                                **data)
+        other_data = self.data.copy()
+        other_data['title'] = 'Another Title'
         another_review = Review.objects.create(ip_address=ip_address,
                                                submission_date=submission_date,
                                                reviewer=another_reviewer,
-                                               **self.data)
+                                               **other_data)
 
         self.client.login(username=self.reviewer.username, password=self.PASSWORD)
         response = self.client.get(self.url, format='json')
+        response_data = dict(response.data[0])
 
         assert response.status_code == status.HTTP_200_OK
         assert Review.objects.count() == 2
         assert len(response.data) == 1
+        assert response_data == data
+        assert response_data != other_data

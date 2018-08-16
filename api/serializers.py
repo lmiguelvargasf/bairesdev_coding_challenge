@@ -15,7 +15,7 @@ def get_client_ip(request):
 class ReviewSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Review
-        exclude = ('submission_date', 'ip_address', 'reviewer')
+        exclude = ('submission_date', 'ip_address', 'reviewer', 'url')
 
     def create(self, validated_data):
         request = self.context['request']
